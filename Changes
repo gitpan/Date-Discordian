@@ -3,3 +3,9 @@ Revision history for Perl extension Date::Discordian.
 0.01  Sat Aug 12 22:37:58 2000
 	- original version; created by h2xs 1.19
 
+1.00  Sat Aug 12, 11:00 2000
+	- Initial release to CPAN
+
+1.01  Sun Aug 13, 12:10am, 2000
+	- Decided that returning an array made no sense at all.
+	- Added leap year checking
