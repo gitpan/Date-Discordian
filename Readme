@@ -6,6 +6,21 @@ SYNOPSIS
       $discordian = discordian(time);
       $epochtime = inverse_discordian('bureaucracy 47, 3166');
 
+    Or, the OO interface ...
+
+      use Date::Discordian;
+      my $disco = Date::Discordian->new( epoch => time );
+      $discordian = $disco->discordian;
+
+      my $date = Date::Discordian->new( 
+        discordian => 'bureaucracy 47, 3166');
+      $epoch = $date->epoch;
+      $ical = $date->ical;
+      $discordian = $date->discordian;
+
+    Note that a Date::Discordian object ISA Date::ICal object, so see the
+    docs for Date::ICal as well.
+
 DESCRIPTION
     Calculate the Discordian date of a particular 'real' date.
 
@@ -20,7 +35,6 @@ DESCRIPTION
     this, send me a note.
 
 Bugs/To Do
-            a timestamp-ish form of Discordian (similar to Julian)
             more chicken references.
         Accept C<ddate>-style input.
 
@@ -40,4 +54,11 @@ AUTHOR
               -- (doubter of the wisdom of Discordianism)
             Matt Cashner <eek@eekeek.org> 
               -- (Sungo the Funky)
+
+SEE ALSO
+    Date::ICal
+
+    Reefknot (www.reefknot.org)
+
+    datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 

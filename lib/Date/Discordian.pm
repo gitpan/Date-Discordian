@@ -9,7 +9,7 @@ use Date::ICal;
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.27 $')[1];
+$VERSION   = (qw'$Revision: 1.28 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -140,7 +140,7 @@ sub from_discordian {
         $discordian =~ m/(\d{4})/;
         my $year = $1;
         $year -= 1166;
-        $epoch = timelocal( 0, 0, 0, 29, 1, $year );
+        $epoch = timegm( 0, 0, 0, 29, 1, $year );
       } else {
 
         # With any luck, we now have "season day year"
@@ -246,9 +246,13 @@ datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
 =begin CVS
 
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.27 2001/09/12 03:17:24 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.28 2001/09/13 01:35:02 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.28  2001/09/13 01:35:02  rbowen
+Timezone problem. Use gmtime rather than localtime.
+Move tests to using is() rather than ok()
+
 Revision 1.27  2001/09/12 03:17:24  rbowen
 Added OO interface to Date::Discordian. Now a Date::ICal subclass. 25%
 more chewy.
