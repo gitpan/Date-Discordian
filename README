@@ -18,6 +18,11 @@ SYNOPSIS
       $ical = $date->ical;
       $discordian = $date->discordian;
 
+      $season = $date->season;
+      $discoday = $date->discoday; # eg 'Pungenday'
+      $yold = $date->yold;
+      $holyday = $date->holyday;
+
     Note that a Date::Discordian object ISA Date::ICal object, so see the
     docs for Date::ICal as well.
 
@@ -37,6 +42,7 @@ DESCRIPTION
 Bugs/To Do
             more chicken references.
         Accept C<ddate>-style input.
+        demystify the strange memoize stuff
 
 General comments
     You can find out more about the Discordian Calendar at

@@ -1,7 +1,7 @@
 Changes
 MANIFEST
 Makefile.PL
-Readme
+README
 LICENSE
 
 lib/Date/Discordian.pm

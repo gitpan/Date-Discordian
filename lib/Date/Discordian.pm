@@ -1,3 +1,4 @@
+#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.30 2001/10/15 02:47:37 rbowen Exp $
 package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
@@ -5,11 +6,12 @@ require Exporter;
 use Time::Local;
 use Date::Leapyear qw();
 use Date::ICal;
+use Memoize;
 
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.28 $')[1];
+$VERSION   = (qw'$Revision: 1.30 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -61,6 +63,13 @@ sub discordian {
 
 sub to_discordian {
     my $datetime = shift;
+    my $discohash = discohash( $datetime );
+    return $discohash->{disco};
+}
+
+memoize('discohash');
+sub discohash {
+    my $datetime = shift;
     $datetime ||= time;
     my ( $year, $yday, $season, $day, $dow, $yold, $holyday, $datestring );
 
@@ -104,7 +113,16 @@ sub to_discordian {
 
     $datestring .= " YOLD $yold";
 
-    return $datestring;
+    my $discohash = {
+        disco    => $datestring,
+        season   => $SEASONS[$season],
+        yold     => $yold,
+        holyday  => $holyday,
+        seasonday=> $day,
+        discoday => $DAYS[ $dow - 1 ],
+    };
+
+    return $discohash;
 } #}}}
 
 # sub inverse_discordian {{{
@@ -162,6 +180,58 @@ sub from_discordian {
     return $epoch;
 } #}}}
 
+sub season {
+    my $d = shift;
+    my $h;
+
+    if (ref $d) {
+        $h = discohash($d->epoch);
+        return $h->{season};
+    } else {
+        $h = discohash($d);
+        return $h->{season};
+    }
+}
+
+sub discoday {
+    my $d = shift;
+    my $h;
+
+    if (ref $d) {
+        $h = discohash($d->epoch);
+        return $h->{discoday};
+    } else {
+        $h = discohash($d);
+        return $h->{discoday};
+    }
+}
+
+sub yold {
+    my $d = shift;
+    my $h;
+
+    if (ref $d) {
+        $h = discohash($d->epoch);
+        return $h->{yold};
+    } else {
+        $h = discohash($d);
+        return $h->{yold};
+    }
+}
+
+sub holyday {
+    my $d = shift;
+    my $h;
+
+    if (ref $d) {
+        $h = discohash($d->epoch);
+        return $h->{holyday};
+    } else {
+        $h = discohash($d);
+        return $h->{holyday};
+    }
+}
+
 1;
 
 # Docs {{{
@@ -188,6 +258,11 @@ Or, the OO interface ...
   $ical = $date->ical;
   $discordian = $date->discordian;
 
+  $season = $date->season;
+  $discoday = $date->discoday; # eg 'Pungenday'
+  $yold = $date->yold;
+  $holyday = $date->holyday;
+
 Note that a Date::Discordian object ISA Date::ICal object, so see the
 docs for Date::ICal as well.
 
@@ -210,6 +285,7 @@ this, send me a note.
 
 	more chicken references.
     Accept C<ddate>-style input.
+    demystify the strange memoize stuff
 
 =head1 General comments
 
@@ -246,9 +322,16 @@ datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
 =begin CVS
 
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.28 2001/09/13 01:35:02 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.30 2001/10/15 02:47:37 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.30  2001/10/15 02:47:37  rbowen
+Documentation update
+
+Revision 1.29  2001/10/15 02:43:57  rbowen
+Added various attribute accessors to get at yold, season, holyday, and
+day of the week.
+
 Revision 1.28  2001/09/13 01:35:02  rbowen
 Timezone problem. Use gmtime rather than localtime.
 Move tests to using is() rather than ok()
