@@ -23,6 +23,11 @@ SYNOPSIS
       $yold = $date->yold;
       $holyday = $date->holyday;
 
+    Or, for dates outside of the epoch:
+
+      my $disco = Date::Discordian->new( ical => '17760704Z' );
+      $discordian = $disco->discordian;
+
     Note that a Date::Discordian object ISA Date::ICal object, so see the
     docs for Date::ICal as well.
 
@@ -40,14 +45,25 @@ DESCRIPTION
     this, send me a note.
 
 Bugs/To Do
-            more chicken references.
-        Accept C<ddate>-style input.
-        demystify the strange memoize stuff
+        There are no bugs. Only misinterpretation of the documentation.
+        Accept C<ddate>-style input. And possibly output the same format as
+            ddate, since that seems more widely accepted
+        Perhaps an option of some variety to be able to create dates to use
+            the 4000bc epoch rather than the 1166bc epoch
+        Get mentioned in more articles about the cool things you can do with
+            Perl (http://www.perl.com/pub/a/2001/10/31/lighter.html)
 
 General comments
+    When I first started working on this module, it was purely as an
+    exercise to get started on Date:: modules in general. Since that time, I
+    have become alarmingly aware of how the events of real life seem to
+    follow the Discordian calendrical rhythm. Perhaps this is just because
+    everything sucks all of the time, but it seems to be a little deeper
+    than this.
+
     You can find out more about the Discordian Calendar at
-    http://www.concentric.net/~darkfox/DiscoCal.html and at a plethora of
-    other sites on the Internet.
+    http://jubal.westnet.com/hyperdiscordia/discordian_calendar.html and at
+    a plethora of other sites on the Internet.
 
     It is related to the Principia Discordia
     (http://members.xoom.com/ffungo/titlepage.html) and the "religion" of
@@ -56,7 +72,7 @@ General comments
     Babies, so what do you expect?
 
 AUTHOR
-            Rich Bowen <rbowen@rcbowen.com> 
+            Rich Bowen (DrBacchus) <rbowen@rcbowen.com> 
               -- (doubter of the wisdom of Discordianism)
             Matt Cashner <eek@eekeek.org> 
               -- (Sungo the Funky)
@@ -67,4 +83,9 @@ SEE ALSO
     Reefknot (www.reefknot.org)
 
     datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
+
+    Calendrical Calculations, by Reingold and Dershowitz. Not that it has
+    anything to do with this calendar, but it is a great resource if you are
+    interested in algorithmic calendars. And, on that same note, the Oxford
+    Companion to the Year is a wonderful book too.
 

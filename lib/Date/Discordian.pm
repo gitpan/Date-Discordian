@@ -1,4 +1,4 @@
-#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.34 2001/11/24 19:04:26 rbowen Exp $
+#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.35 2001/11/25 03:27:09 rbowen Exp $
 package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
@@ -11,7 +11,7 @@ use Memoize;
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.34 $')[1];
+$VERSION   = (qw'$Revision: 1.35 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -25,8 +25,7 @@ $VERSION   = (qw'$Revision: 1.34 $')[1];
 
 # sub new  {{{
 
-sub new {
-    
+sub new { # There is nothing new under the sun.
     my $class = shift;
     my %args = @_;
     my $self;
@@ -50,7 +49,7 @@ sub new {
 
 # sub discordian {{{
 
-sub discordian {
+sub discordian { # Not to be confused with sub genius.
     if (ref $_[0]) {
         my $self = shift;
         my $d = discohash( $self->year, $self->month, $self->day );
@@ -62,7 +61,7 @@ sub discordian {
 
 # sub to_discordian {{{
 
-sub to_discordian {
+sub to_discordian { # Be careful. It's hard to get back.
     my $datetime = shift;
     $datetime = time unless defined $datetime;
     my $d = Date::ICal->new( epoch => $datetime );
@@ -78,6 +77,7 @@ sub discohash { # Is that something you smoke at a disco?
     my ( $season, $day, $dow, $yold, $holyday, $datestring );
 
     my $yday = Date::ICal::days_this_year( $d, $month, $year ) + 1;
+    # It *says* it's an internal method, but I'm not buying it.
 
     if ( Date::Leapyear::isleap( $year ) ) {
         if ( $yday <= 59 ) {
@@ -130,7 +130,7 @@ sub discohash { # Is that something you smoke at a disco?
 
 # sub inverse_discordian {{{
 
-sub inverse_discordian {
+sub inverse_discordian { # Sounds like a wrestling hold.
     if ( ref $_[0] ) {
         my $self = shift;
         return $self->epoch;
@@ -141,7 +141,7 @@ sub inverse_discordian {
 
 # sub from_discordian {{{
 
-sub from_discordian {
+sub from_discordian { # You only think it's possible.
     my $discordian = shift;
     my $epoch;
 
@@ -183,7 +183,9 @@ sub from_discordian {
     return $epoch;
 } #}}}
 
-sub season {
+# sub season {{{
+
+sub season { # For everything, there is a season.
     my $d = shift;
     my $h;
 
@@ -194,9 +196,11 @@ sub season {
         $h = to_discordian($d);
         return $h->{season};
     }
-}
+} #}}}
 
-sub discoday {
+# sub discoday {{{
+
+sub discoday { # Stayin' alive
     my $d = shift;
     my $h;
 
@@ -207,9 +211,14 @@ sub discoday {
         $h = to_discordian($d);
         return $h->{discoday};
     }
-}
+} # }}}
+
+# sub yold {{{
 
 sub yold {
+# Some folks say the epoch begins in 4000 BC. This is heresy. Spurn
+# these people. Or at least make strange chicken noises at them.
+
     my $d = shift;
     my $h;
 
@@ -220,9 +229,11 @@ sub yold {
         $h = to_discordian($d);
         return $h->{yold};
     }
-}
+} #}}}
 
-sub holyday {
+# sub holyday {{{
+
+sub holyday { # Eat a hot dog
     my $d = shift;
     my $h;
 
@@ -233,7 +244,7 @@ sub holyday {
         $h = to_discordian($d);
         return $h->{holyday};
     }
-}
+} #}}}
 
 1;
 
@@ -291,11 +302,22 @@ this, send me a note.
 
 =head1 Bugs/To Do
 
-	more chicken references.
-    Accept C<ddate>-style input.
-    demystify the strange memoize stuff
+    There are no bugs. Only misinterpretation of the documentation.
+    Accept C<ddate>-style input. And possibly output the same format as
+        ddate, since that seems more widely accepted
+    Perhaps an option of some variety to be able to create dates to use
+        the 4000bc epoch rather than the 1166bc epoch
+    Get mentioned in more articles about the cool things you can do with
+        Perl (http://www.perl.com/pub/a/2001/10/31/lighter.html)
 
 =head1 General comments
+
+When I first started working on this module, it was purely as an
+exercise to get started on Date:: modules in general. Since that time, I
+have become alarmingly aware of how the events of real life seem to
+follow the Discordian calendrical rhythm. Perhaps this is just because
+everything sucks all of the time, but it seems to be a little deeper
+than this.
 
 You can find out more about the Discordian Calendar at
 http://jubal.westnet.com/hyperdiscordia/discordian_calendar.html
@@ -309,7 +331,7 @@ people that collect Beanie Babies, so what do you expect?
 
 =head1 AUTHOR
 
-	Rich Bowen <rbowen@rcbowen.com> 
+	Rich Bowen (DrBacchus) <rbowen@rcbowen.com> 
           -- (doubter of the wisdom of Discordianism)
 	Matt Cashner <eek@eekeek.org> 
           -- (Sungo the Funky)
@@ -322,6 +344,11 @@ Reefknot (www.reefknot.org)
 
 datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
+Calendrical Calculations, by Reingold and Dershowitz. Not that it has
+anything to do with this calendar, but it is a great resource if you are
+interested in algorithmic calendars. And, on that same note, the Oxford
+Companion to the Year is a wonderful book too.
+
 =cut
 
 #}}}
@@ -330,9 +357,14 @@ datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
 =begin CVS
 
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.34 2001/11/24 19:04:26 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.35 2001/11/25 03:27:09 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.35  2001/11/25 03:27:09  rbowen
+Documentation update. More chicken references. More snide remarks.
+Updated Changes file and README to actually be somewhat in sync with
+reality.
+
 Revision 1.34  2001/11/24 19:04:26  rbowen
 Corrected order of arguments in days_this_year( ) call. Added
 documentation.
