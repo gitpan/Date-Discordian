@@ -1,4 +1,4 @@
-#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.30 2001/10/15 02:47:37 rbowen Exp $
+#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.31 2001/11/22 22:29:49 rbowen Exp $
 package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
@@ -11,7 +11,7 @@ use Memoize;
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.30 $')[1];
+$VERSION   = (qw'$Revision: 1.31 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -63,6 +63,7 @@ sub discordian {
 
 sub to_discordian {
     my $datetime = shift;
+    $datetime = time unless defined $datetime;
     my $discohash = discohash( $datetime );
     return $discohash->{disco};
 }
@@ -70,7 +71,6 @@ sub to_discordian {
 memoize('discohash');
 sub discohash {
     my $datetime = shift;
-    $datetime ||= time;
     my ( $year, $yday, $season, $day, $dow, $yold, $holyday, $datestring );
 
     ( $year, $yday ) = ( gmtime($datetime) )[ 5, 7 ];
@@ -91,7 +91,7 @@ sub discohash {
         }
     }    # End leap year stuff
 
-    $season = int( $yday / 73 );
+    $season = int( ($yday-1) / 73 );
     $day    = ( $yday % 73 ) || 73;
     $dow    = $yday % 5;
     $yold   = $year + 1900 + 1166;
@@ -290,8 +290,8 @@ this, send me a note.
 =head1 General comments
 
 You can find out more about the Discordian Calendar at
-http://www.concentric.net/~darkfox/DiscoCal.html and at a plethora
-of other sites on the Internet.
+http://jubal.westnet.com/hyperdiscordia/discordian_calendar.html
+and at a plethora of other sites on the Internet.
 
 It is related to the Principia Discordia 
 (http://members.xoom.com/ffungo/titlepage.html)
@@ -322,9 +322,13 @@ datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
 =begin CVS
 
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.30 2001/10/15 02:47:37 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.31 2001/11/22 22:29:49 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.31  2001/11/22 22:29:49  rbowen
+Patches for end/beginning of season off-by-one bug. Tests to test for
+same.
+
 Revision 1.30  2001/10/15 02:47:37  rbowen
 Documentation update
 
