@@ -4,6 +4,6 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'	=> 'Date::Discordian',
 	'PREREQ_PM' => { 'Time::Local' => 0 },
-    'VERSION_FROM' => 'Discordian.pm', # finds $VERSION
+    'VERSION_FROM' => 'lib/Date/Discordian.pm', # finds $VERSION
 );
 

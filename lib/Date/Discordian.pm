@@ -4,11 +4,12 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
 require Exporter;
 use Time::Local;
 use Date::Leapyear qw();
+use Date::ICal;
 
-@ISA       = qw(Exporter);
+@ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.26 $')[1];
+$VERSION   = (qw'$Revision: 1.27 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -20,12 +21,50 @@ $VERSION   = (qw'$Revision: 1.26 $')[1];
   [ 'Maladay',  'Afflux' ],
 );
 
+# sub new  {{{
+
+sub new {
+    
+    my $class = shift;
+    my %args = @_;
+    my $self;
+
+    $args{discordian} = $args{disco} if defined $args{disco};
+    $args{epoch} = $args{EPOCH} if defined $args{EPOCH};
+
+    # Discordian date?
+    if ( $args{discordian} ) {
+
+        $self =
+          $class->SUPER::new( epoch => from_discordian( $args{discordian} ) );
+      } else {
+
+        $self = $class->SUPER::new(%args);
+    }
+
+    bless $self, $class;
+    return $self;
+} #}}}
+
+# sub discordian {{{
+
 sub discordian {
-    my ($datetime) = @_;
+    if (ref $_[0]) {
+        my $self = shift;
+        return to_discordian( $self->epoch );
+    } else {
+        return to_discordian( $_[0] );
+    }
+} #}}}
+
+# sub to_discordian {{{
+
+sub to_discordian {
+    my $datetime = shift;
     $datetime ||= time;
     my ( $year, $yday, $season, $day, $dow, $yold, $holyday, $datestring );
 
-    ( $year, $yday ) = ( localtime($datetime) )[ 5, 7 ];
+    ( $year, $yday ) = ( gmtime($datetime) )[ 5, 7 ];
     $yday++;    # yday is 0-based;
 
     if ( Date::Leapyear::isleap( $year + 1900 ) ) {
@@ -66,9 +105,22 @@ sub discordian {
     $datestring .= " YOLD $yold";
 
     return $datestring;
-}
+} #}}}
+
+# sub inverse_discordian {{{
 
 sub inverse_discordian {
+    if ( ref $_[0] ) {
+        my $self = shift;
+        return $self->epoch;
+    } else {
+        return from_discordian( $_[0] );
+    }
+} #}}}
+
+# sub from_discordian {{{
+
+sub from_discordian {
     my $discordian = shift;
     my $epoch;
 
@@ -108,11 +160,11 @@ sub inverse_discordian {
     }
 
     return $epoch;
-}
+} #}}}
 
 1;
 
-__END__
+# Docs {{{
 
 =head1 NAME
 
@@ -123,6 +175,21 @@ Date::Discordian - Calculate the Discordian date of a particular day
   use Date::Discordian;
   $discordian = discordian(time);
   $epochtime = inverse_discordian('bureaucracy 47, 3166');
+
+Or, the OO interface ...
+
+  use Date::Discordian;
+  my $disco = Date::Discordian->new( epoch => time );
+  $discordian = $disco->discordian;
+
+  my $date = Date::Discordian->new( 
+    discordian => 'bureaucracy 47, 3166');
+  $epoch = $date->epoch;
+  $ical = $date->ical;
+  $discordian = $date->discordian;
+
+Note that a Date::Discordian object ISA Date::ICal object, so see the
+docs for Date::ICal as well.
 
 =head1 DESCRIPTION
 
@@ -141,7 +208,6 @@ this, send me a note.
 
 =head1 Bugs/To Do
 
-	a timestamp-ish form of Discordian (similar to Julian)
 	more chicken references.
     Accept C<ddate>-style input.
 
@@ -164,19 +230,38 @@ people that collect Beanie Babies, so what do you expect?
 	Matt Cashner <eek@eekeek.org> 
           -- (Sungo the Funky)
 
+=head1 SEE ALSO
+
+Date::ICal
+
+Reefknot (www.reefknot.org)
+
+datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
+
+=cut
+
+#}}}
+
+# CVS History {{{
+
 =begin CVS
 
-$Header: /home/cvs/date-discordian/Discordian.pm,v 1.26 2001/07/24 15:50:17 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.27 2001/09/12 03:17:24 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.27  2001/09/12 03:17:24  rbowen
+Added OO interface to Date::Discordian. Now a Date::ICal subclass. 25%
+more chewy.
+
 Revision 1.26  2001/07/24 15:50:17  rbowen
 Added a variety of tests.
 
 Revision 1.25  2000/09/24 11:18:05  rbowen
 Completed the inverse_discordian function
 
-
 =end CVS
 
 =cut
+
+# }}}
 

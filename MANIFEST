@@ -1,10 +1,12 @@
 Changes
-Discordian.pm
 MANIFEST
 Makefile.PL
 Readme
+LICENSE
 
+lib/Date/Discordian.pm
 t/00load.t
 t/01basic.t
 t/02inverse.t
+t/03object.t
 
