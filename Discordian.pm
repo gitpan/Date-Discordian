@@ -3,95 +3,111 @@ use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
 require Exporter;
 use Time::Local;
+use Date::Leapyear qw();
 
-@ISA = qw(Exporter AutoLoader);
-@EXPORT = qw( discordian inverse_discordian );
-@EXPORT_OK = qw( @SEASONS @DAYS isleap);
-$VERSION = '1.04';
+@ISA       = qw(Exporter);
+@EXPORT    = qw( discordian inverse_discordian );
+@EXPORT_OK = qw( @SEASONS @DAYS );
+$VERSION   = (qw'$Revision: 1.26 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
-@DAYS = ('Sweetmorn', 'Boomtime', 'Pungenday', 'Prickle Prickle', 'Setting Orange');
+@DAYS =
+  ( 'Sweetmorn', 'Boomtime', 'Pungenday', 'Prickle Prickle', 'Setting Orange' );
 
-@HOLYDAYS = ( [ 'Mungoday', 'Chaoflux' ],                                      
-              [ 'Mojoday', 'Discoflux' ],                                      
-              [ 'Syaday', 'Confuflux' ],                                       
-              [ 'Zaraday', 'Bureflux' ],                                       
-              [ 'Maladay', 'Afflux' ],                                         
-            ); 
+@HOLYDAYS = (
+  [ 'Mungoday', 'Chaoflux' ],  [ 'Mojoday', 'Discoflux' ],
+  [ 'Syaday',   'Confuflux' ], [ 'Zaraday', 'Bureflux' ],
+  [ 'Maladay',  'Afflux' ],
+);
 
+sub discordian {
+    my ($datetime) = @_;
+    $datetime ||= time;
+    my ( $year, $yday, $season, $day, $dow, $yold, $holyday, $datestring );
 
-sub discordian	{
-	my ($datetime) = @_;
-	$datetime ||= time;
-	my ($year, $yday, $season, $day, $dow, $yold, $holyday, $datestring);
-	
-	($year, $yday) = (localtime($datetime))[5, 7];
-	$yday++; # yday is 0-based;
+    ( $year, $yday ) = ( localtime($datetime) )[ 5, 7 ];
+    $yday++;    # yday is 0-based;
 
-	if (isleap($year))	{
-		if ($yday <= 59)	{
-			# nothing changes
-		}
-		elsif ($yday == 60)	{
-			# leap day!
-			$datestring = "St. Tibb's Day";
-		}
-		else {
-			# The rest of the year after leap day
-			$yday--;
-		}
-	} # End leap year stuff
+    if ( Date::Leapyear::isleap( $year + 1900 ) ) {
+        if ( $yday <= 59 ) {
 
-	$season = int($yday/73);
-	$day = ($yday % 73) || 73;
-	$dow = $yday % 5;
-    $yold = $year + 1900 + 1166;
+            # nothing changes
+          } elsif ( $yday == 60 ) {
 
-    if($day == 5) { $holyday = $HOLYDAYS[$season][0]; }                        
-    elsif ($day == 50) { $holyday = $HOLYDAYS[$season][1]; }                   
-    else { $holyday = undef; }        
-    
-    unless($datestring) {
-        if($holyday) {
-        	$datestring = $DAYS[$dow-1] . ' ('. $holyday .'), ' . $SEASONS[$season] . ' ' . $day;
-        } else {
-            $datestring = $DAYS[$dow-1] . ', ' . $SEASONS[$season] . ' ' . $day;
-        } 
+            # leap day!
+            $datestring = "St. Tibb's Day";
+          } else {
+
+            # The rest of the year after leap day
+            $yday--;
+        }
+    }    # End leap year stuff
+
+    $season = int( $yday / 73 );
+    $day    = ( $yday % 73 ) || 73;
+    $dow    = $yday % 5;
+    $yold   = $year + 1900 + 1166;
+
+    if ( $day == 5 )     { $holyday = $HOLYDAYS[$season][0]; }
+    elsif ( $day == 50 ) { $holyday = $HOLYDAYS[$season][1]; }
+    else { $holyday = undef; }
+
+    unless ($datestring) {
+        if ($holyday) {
+            $datestring =
+              $DAYS[ $dow - 1 ] . ' (' . $holyday . '), ' . $SEASONS[$season]
+              . ' ' . $day;
+          } else {
+            $datestring =
+              $DAYS[ $dow - 1 ] . ', ' . $SEASONS[$season] . ' ' . $day;
+        }
     }
 
     $datestring .= " YOLD $yold";
 
-	return $datestring ;
+    return $datestring;
 }
 
-sub isleap	{
-	my ($year) = @_;
-	$year += 1900;
-     return 1 if ( ($year % 4 == 0) &&
-          ( ($year % 100) || ($year % 400 == 0) ) );
-	return 0;
-}
+sub inverse_discordian {
+    my $discordian = shift;
+    my $epoch;
 
-sub inverse_discordian	{
-	my ($discordian) = @_;
-	for ($discordian)	{
-		# The day does not really matter ...
-		s/sweetmorn|boomtime|setting orange|prickle prickle|pungenday//i;
-		s/,//g;
-		s/YOLD//i;
-		s/\s+/ /;
-		s/^\s+//;
-	}
-	# With any luck, we now have "season day year"
-	my ($season, $day, $year) = split / /,$discordian;
-	$year -= 1166;
-     $season = lc($season);
-	my %seasons = (chaos => 0, discord => 1, confusion => 2,
-		bureaucracy => 3, aftermath => 4);
-	my $doy = $seasons{$season}*73 + $day;
-     $doy++ if ($doy >= 60 && isleap($year));
-     my $seconds = $doy * 86400 + timelocal(0,0,0,1,0,$year);
-     return $seconds;
+    for ($discordian) {
+
+        # The day does not really matter ...
+        s/sweetmorn|boomtime|setting orange|prickle prickle|pungenday//i;
+        s/,//g;
+        s/YOLD//i;
+        s/\s+/ /g;
+        s/\(.*?\)//;    # Holydays
+        s/^\s+//;
+    }
+
+    # Special case - St. Tibb's Day
+    if ( $discordian =~ /st\.? tibb'?s day/i ) {
+        $discordian =~ m/(\d{4})/;
+        my $year = $1;
+        $year -= 1166;
+        $epoch = timelocal( 0, 0, 0, 29, 1, $year );
+      } else {
+
+        # With any luck, we now have "season day year"
+        my ( $season, $day, $year ) = split / /, $discordian;
+        $year -= 1166;
+        $season = lc($season);
+        my %seasons = (
+          chaos       => 0,
+          discord     => 1,
+          confusion   => 2,
+          bureaucracy => 3,
+          aftermath   => 4
+        );
+        my $doy = $seasons{$season} * 73 + $day;
+        $doy++ if ( $doy >= 60 && Date::Leapyear::isleap($year) );
+        $epoch = ( $doy - 1 ) * 86400 + timegm( 0, 0, 0, 1, 0, $year );
+    }
+
+    return $epoch;
 }
 
 1;
@@ -127,7 +143,7 @@ this, send me a note.
 
 	a timestamp-ish form of Discordian (similar to Julian)
 	more chicken references.
-     Accept C<ddate>-style input.
+    Accept C<ddate>-style input.
 
 =head1 General comments
 
@@ -145,14 +161,20 @@ people that collect Beanie Babies, so what do you expect?
 
 	Rich Bowen <rbowen@rcbowen.com> 
           -- (doubter of the wisdom of Discordianism)
-	Matt Cashner <sungo@earthling.net> 
+	Matt Cashner <eek@eekeek.org> 
           -- (Sungo the Funky)
 
 =begin CVS
 
-$Header$
+$Header: /home/cvs/date-discordian/Discordian.pm,v 1.26 2001/07/24 15:50:17 rbowen Exp $
 
-$Log$
+$Log: Discordian.pm,v $
+Revision 1.26  2001/07/24 15:50:17  rbowen
+Added a variety of tests.
+
+Revision 1.25  2000/09/24 11:18:05  rbowen
+Completed the inverse_discordian function
+
 
 =end CVS
 

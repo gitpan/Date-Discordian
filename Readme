@@ -9,17 +9,20 @@ SYNOPSIS
 DESCRIPTION
     Calculate the Discordian date of a particular 'real' date.
 
-    Date::Discordian exports just one function - discordian() - which, when
-    given a time value, returns a string, giving the Discordian date for the
-    given day.
+    Date::Discordian exports two functions - discordian(), and
+    inverse_discordian. "discordian()", when given a time value, returns a
+    string, giving the Discordian date for the given day.
+    *inverse_discordian()*, given a Discordian date in the same format that
+    "discordian()" emits, returns an epoch time value. It is pretty picky
+    about time format. Pity.
 
     I'm really not sure how this would ever be used, so if you actually use
     this, send me a note.
 
 Bugs/To Do
             a timestamp-ish form of Discordian (similar to Julian)
-            conversion back from Discordian to epoch
             more chicken references.
+        Accept C<ddate>-style input.
 
 General comments
     You can find out more about the Discordian Calendar at
@@ -33,6 +36,8 @@ General comments
     Babies, so what do you expect?
 
 AUTHOR
-            Rich Bowen <rbowen@rcbowen.com> (doubter of the wisdom of Discordianism)
-            Matt Cashner <sungo@earthling.net> (Sungo the Funky)
+            Rich Bowen <rbowen@rcbowen.com> 
+              -- (doubter of the wisdom of Discordianism)
+            Matt Cashner <eek@eekeek.org> 
+              -- (Sungo the Funky)
 

@@ -2,5 +2,9 @@ Changes
 Discordian.pm
 MANIFEST
 Makefile.PL
-test.pl
 Readme
+
+t/00load.t
+t/01basic.t
+t/02inverse.t
+

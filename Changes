@@ -21,3 +21,19 @@ Revision history for Perl extension Date::Discordian.
 1.04  Boomtime, Bureaucracy 48 YOLD 3166, 12:02am
      - Added inverse_discordian function
 
+1.26  Pungenday, Confusion 57 YOLD 3167, 22:15:48
+    - It seemed important to gice this a new, entirely meaningless
+      version number. 1.26 Seems like a good one. Law of fives: 1 - 2
+      + 6 = 5. 
+    - Added much more thorough testing.
+    - Moved to Date::Leapyear for the leapyear calculations. This
+      increases the Eristic factor of this code, since its
+      dependencies are now spread over more modules. Look out for
+      Date::Calc in the next version.
+    - I would put more quotes from the principia in the code and in
+      the documentation, but (and I know this is a heresy) I don't
+      have a copy with me, and I am temporarily unconnected from that
+      source of all Chaos, the Internet.
+    - But mostly, there's no good reason for this release, except that
+      I'm trying to put off doing real work.
+
