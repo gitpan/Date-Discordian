@@ -6,7 +6,7 @@ require Exporter;
 @ISA = qw(Exporter AutoLoader);
 @EXPORT = qw( discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS isleap);
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS = ('Sweetmorn', 'Boomtime', 'Pungenday', 'Prickle Prickle', 'Setting Orange');
@@ -97,11 +97,9 @@ this, send me a note.
 
 =head1 Bugs/To Do
 
-I'd like for it to be able to return the various Holydays in 
-some useful fashion, ala ddate.
-
-And, for some reason, I did not realize that there was a year associated
-with these. I'll have that in the next version.
+a timestamp-ish form of Discordian (similar to Julian)
+conversion back from Discordian to epoch
+more chicken references.
 
 =head1 General comments
 
@@ -117,7 +115,7 @@ people that collect Beanie Babies, so what do you expect?
 
 =head1 AUTHOR
 
-	Rich Bowen <rbowen@rcbowen.com>
-	Matt Cashner <sungo@earthling.net>
+	Rich Bowen <rbowen@rcbowen.com> (doubter of the wisdom of Discordianism)
+	Matt Cashner <sungo@earthling.net> (Sungo the Funky)
 
 =cut

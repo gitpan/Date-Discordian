@@ -1,11 +1,20 @@
 Revision history for Perl extension Date::Discordian.
 
-0.01  Sat Aug 12 22:37:58 2000
+0.01  Prickle Prickle (Zaraday), Bureaucracy 5 YOLD 3166, 10:37pm
 	- original version; created by h2xs 1.19
 
-1.00  Sat Aug 12, 11:00 2000
+1.00  Prickle Prickle (Zaraday), Bureaucracy 5 YOLD 3166, 11:00pm
 	- Initial release to CPAN
 
-1.01  Sun Aug 13, 12:10am, 2000
+1.01  Setting Orange, Bureaucracy 6 YOLD 3166, 12:10am
 	- Decided that returning an array made no sense at all.
 	- Added leap year checking
+
+1.02  Sweetmorn, Bureaucracy 7 YOLD 3166, 10:50pm
+	- Matt added the Holyday handling
+	- Made time the default argument
+	- Additional documentation
+
+1.03  Sweetmorn, Bureaucracy 7 YOLD 3166, 11:28pm
+	- Updated documentation a little
+
