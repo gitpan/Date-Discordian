@@ -1,4 +1,4 @@
-#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.31 2001/11/22 22:29:49 rbowen Exp $
+#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.32 2001/11/23 00:57:10 rbowen Exp $
 package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
@@ -11,7 +11,7 @@ use Memoize;
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.31 $')[1];
+$VERSION   = (qw'$Revision: 1.32 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -53,7 +53,8 @@ sub new {
 sub discordian {
     if (ref $_[0]) {
         my $self = shift;
-        return to_discordian( $self->epoch );
+        my $d = discohash( $self->year, $self->month, $self->day );
+        return $d->{disco};
     } else {
         return to_discordian( $_[0] );
     }
@@ -64,19 +65,21 @@ sub discordian {
 sub to_discordian {
     my $datetime = shift;
     $datetime = time unless defined $datetime;
-    my $discohash = discohash( $datetime );
+    my $d = Date::ICal->new( epoch => $datetime );
+
+    my $discohash = discohash( $d->year, $d->month, $d->day );
     return $discohash->{disco};
 }
 
 memoize('discohash');
-sub discohash {
-    my $datetime = shift;
-    my ( $year, $yday, $season, $day, $dow, $yold, $holyday, $datestring );
+sub discohash { # Is that something you smoke at a disco?
+    my ( $year, $month, $d ) = @_;
+    # my $datetime = shift;
+    my ( $season, $day, $dow, $yold, $holyday, $datestring );
 
-    ( $year, $yday ) = ( gmtime($datetime) )[ 5, 7 ];
-    $yday++;    # yday is 0-based;
+    my $yday = Date::ICal::days_this_year( $d, $month, $year ) + 1;
 
-    if ( Date::Leapyear::isleap( $year + 1900 ) ) {
+    if ( Date::Leapyear::isleap( $year ) ) {
         if ( $yday <= 59 ) {
 
             # nothing changes
@@ -94,7 +97,7 @@ sub discohash {
     $season = int( ($yday-1) / 73 );
     $day    = ( $yday % 73 ) || 73;
     $dow    = $yday % 5;
-    $yold   = $year + 1900 + 1166;
+    $yold   = $year + 1166;
 
     if ( $day == 5 )     { $holyday = $HOLYDAYS[$season][0]; }
     elsif ( $day == 50 ) { $holyday = $HOLYDAYS[$season][1]; }
@@ -185,10 +188,10 @@ sub season {
     my $h;
 
     if (ref $d) {
-        $h = discohash($d->epoch);
+        $h = discohash($d->year, $d->month, $d->day);
         return $h->{season};
     } else {
-        $h = discohash($d);
+        $h = to_discordian($d);
         return $h->{season};
     }
 }
@@ -198,10 +201,10 @@ sub discoday {
     my $h;
 
     if (ref $d) {
-        $h = discohash($d->epoch);
+        $h = discohash($d->year, $d->month, $d->day);
         return $h->{discoday};
     } else {
-        $h = discohash($d);
+        $h = to_discordian($d);
         return $h->{discoday};
     }
 }
@@ -211,10 +214,10 @@ sub yold {
     my $h;
 
     if (ref $d) {
-        $h = discohash($d->epoch);
+        $h = discohash($d->year, $d->month, $d->day);
         return $h->{yold};
     } else {
-        $h = discohash($d);
+        $h = to_discordian($d);
         return $h->{yold};
     }
 }
@@ -224,10 +227,10 @@ sub holyday {
     my $h;
 
     if (ref $d) {
-        $h = discohash($d->epoch);
+        $h = discohash($d->year, $d->month, $d->day);
         return $h->{holyday};
     } else {
-        $h = discohash($d);
+        $h = to_discordian($d);
         return $h->{holyday};
     }
 }
@@ -322,9 +325,12 @@ datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
 =begin CVS
 
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.31 2001/11/22 22:29:49 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.32 2001/11/23 00:57:10 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.32  2001/11/23 00:57:10  rbowen
+Permit years outside of the epoch.
+
 Revision 1.31  2001/11/22 22:29:49  rbowen
 Patches for end/beginning of season off-by-one bug. Tests to test for
 same.
