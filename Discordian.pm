@@ -2,11 +2,12 @@ package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
 require Exporter;
+use Time::Local;
 
 @ISA = qw(Exporter AutoLoader);
-@EXPORT = qw( discordian );
+@EXPORT = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS isleap);
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS = ('Sweetmorn', 'Boomtime', 'Pungenday', 'Prickle Prickle', 'Setting Orange');
@@ -66,9 +67,31 @@ sub discordian	{
 sub isleap	{
 	my ($year) = @_;
 	$year += 1900;
-	return 1 if $year%4==0;
-	return 1 if ($year%4==0 && !$year%100);
+     return 1 if ( ($year % 4 == 0) &&
+          ( ($year % 100) || ($year % 400 == 0) ) );
 	return 0;
+}
+
+sub inverse_discordian	{
+	my ($discordian) = @_;
+	for ($discordian)	{
+		# The day does not really matter ...
+		s/sweetmorn|boomtime|setting orange|prickle prickle|pungenday//i;
+		s/,//g;
+		s/YOLD//i;
+		s/\s+/ /;
+		s/^\s+//;
+	}
+	# With any luck, we now have "season day year"
+	my ($season, $day, $year) = split / /,$discordian;
+	$year -= 1166;
+     $season = lc($season);
+	my %seasons = (chaos => 0, discord => 1, confusion => 2,
+		bureaucracy => 3, aftermath => 4);
+	my $doy = $seasons{$season}*73 + $day;
+     $doy++ if ($doy >= 60 && isleap($year));
+     my $seconds = $doy * 86400 + timelocal(0,0,0,1,0,$year);
+     return $seconds;
 }
 
 1;
@@ -83,23 +106,28 @@ Date::Discordian - Calculate the Discordian date of a particular day
 
   use Date::Discordian;
   $discordian = discordian(time);
+  $epochtime = inverse_discordian('bureaucracy 47, 3166');
 
 =head1 DESCRIPTION
 
 Calculate the Discordian date of a particular 'real' date.
 
-Date::Discordian exports just one function - discordian() - which,
+Date::Discordian exports two functions - discordian(), and
+inverse_discordian. C<discordian()>,
 when given a time value, returns a string, giving the Discordian
-date for the given day.
+date for the given day. I<inverse_discordian()>, given a
+Discordian date in the same format that C<discordian()> emits,
+returns an epoch time value. It is pretty picky about time
+format. Pity.
 
 I'm really not sure how this would ever be used, so if you actually use
 this, send me a note.
 
 =head1 Bugs/To Do
 
-a timestamp-ish form of Discordian (similar to Julian)
-conversion back from Discordian to epoch
-more chicken references.
+	a timestamp-ish form of Discordian (similar to Julian)
+	more chicken references.
+     Accept C<ddate>-style input.
 
 =head1 General comments
 
@@ -115,7 +143,18 @@ people that collect Beanie Babies, so what do you expect?
 
 =head1 AUTHOR
 
-	Rich Bowen <rbowen@rcbowen.com> (doubter of the wisdom of Discordianism)
-	Matt Cashner <sungo@earthling.net> (Sungo the Funky)
+	Rich Bowen <rbowen@rcbowen.com> 
+          -- (doubter of the wisdom of Discordianism)
+	Matt Cashner <sungo@earthling.net> 
+          -- (Sungo the Funky)
+
+=begin CVS
+
+$Header$
+
+$Log$
+
+=end CVS
 
 =cut
+

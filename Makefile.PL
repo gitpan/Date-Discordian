@@ -3,5 +3,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'Date::Discordian',
+	'PREREQ_PM' => { 'Time::Local' => 0 },
     'VERSION_FROM' => 'Discordian.pm', # finds $VERSION
 );
+
