@@ -1,4 +1,4 @@
-#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.32 2001/11/23 00:57:10 rbowen Exp $
+#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.34 2001/11/24 19:04:26 rbowen Exp $
 package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
@@ -11,7 +11,7 @@ use Memoize;
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.32 $')[1];
+$VERSION   = (qw'$Revision: 1.34 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -266,6 +266,11 @@ Or, the OO interface ...
   $yold = $date->yold;
   $holyday = $date->holyday;
 
+Or, for dates outside of the epoch:
+
+  my $disco = Date::Discordian->new( ical => '17760704Z' );
+  $discordian = $disco->discordian;
+
 Note that a Date::Discordian object ISA Date::ICal object, so see the
 docs for Date::ICal as well.
 
@@ -325,9 +330,16 @@ datetime@perl.org (http://lists.perl.org/showlist.cgi?name=datetime)
 
 =begin CVS
 
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.32 2001/11/23 00:57:10 rbowen Exp $
+$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.34 2001/11/24 19:04:26 rbowen Exp $
 
 $Log: Discordian.pm,v $
+Revision 1.34  2001/11/24 19:04:26  rbowen
+Corrected order of arguments in days_this_year( ) call. Added
+documentation.
+
+Revision 1.33  2001/11/24 18:03:32  rbowen
+The syntax for days_this_year changed. That is probably a bad thing.
+
 Revision 1.32  2001/11/23 00:57:10  rbowen
 Permit years outside of the epoch.
 
