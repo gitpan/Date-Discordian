@@ -19,8 +19,8 @@ print "ok 1\n";
 # of the test code):
 
 print "January 1, 2000 ... ";
-$discordian = discordian(946702800);
-if ($discordian eq 'Sweetmorn, Chaos 1')	{
+$discordian = discordian(946702800);    
+if ($discordian eq 'Sweetmorn, Chaos 1 YOLD 3166')	{
 	print "ok 2\n";
 }
 else {
@@ -29,7 +29,7 @@ else {
 
 print "February 28, 2000 ... ";
 $discordian = discordian(951714000);
-if ($discordian eq 'Prickle Prickle, Chaos 59')	{
+if ($discordian eq 'Prickle Prickle, Chaos 59 YOLD 3166')	{
 	print "ok 3\n";
 }
 else {
@@ -38,7 +38,7 @@ else {
 
 print "February 29, 2000 ... ";
 $discordian = discordian(951800400);
-if ($discordian eq 'St. Tib\'s Day')	{
+if ($discordian eq 'St. Tibb\'s Day YOLD 3166')	{
 	print "ok 4\n";
 }
 else {
@@ -47,7 +47,7 @@ else {
 
 print "August 12, 2000 ... ";
 $discordian = discordian(966108845);
-if ($discordian eq 'Prickle Prickle, Bureaucracy 5')	{
+if ($discordian eq 'Prickle Prickle (Zaraday), Bureaucracy 5 YOLD 3166')	{
 	print "ok 5\n";
 }
 else {
