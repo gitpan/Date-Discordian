@@ -1,4 +1,4 @@
-#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.35 2001/11/25 03:27:09 rbowen Exp $
+#$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.36 2003/06/08 01:54:03 rbowen Exp $
 package Date::Discordian;
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @SEASONS @DAYS @HOLYDAYS);
@@ -11,7 +11,7 @@ use Memoize;
 @ISA       = qw(Exporter Date::ICal);
 @EXPORT    = qw( discordian inverse_discordian );
 @EXPORT_OK = qw( @SEASONS @DAYS );
-$VERSION   = (qw'$Revision: 1.35 $')[1];
+$VERSION   = (qw'$Revision: 1.36 $')[1];
 
 @SEASONS = qw(Chaos Discord Confusion Bureaucracy Aftermath);
 @DAYS =
@@ -25,19 +25,19 @@ $VERSION   = (qw'$Revision: 1.35 $')[1];
 
 # sub new  {{{
 
-sub new { # There is nothing new under the sun.
+sub new {    # There is nothing new under the sun.
     my $class = shift;
-    my %args = @_;
+    my %args  = @_;
     my $self;
 
     $args{discordian} = $args{disco} if defined $args{disco};
-    $args{epoch} = $args{EPOCH} if defined $args{EPOCH};
+    $args{epoch}      = $args{EPOCH} if defined $args{EPOCH};
 
     # Discordian date?
     if ( $args{discordian} ) {
 
-        $self =
-          $class->SUPER::new( epoch => from_discordian( $args{discordian} ) );
+        $self = $class->SUPER::new( 
+            epoch => from_discordian( $args{discordian} ) );
       } else {
 
         $self = $class->SUPER::new(%args);
@@ -45,19 +45,20 @@ sub new { # There is nothing new under the sun.
 
     bless $self, $class;
     return $self;
-} #}}}
+}    #}}}
 
 # sub discordian {{{
 
-sub discordian { # Not to be confused with sub genius.
-    if (ref $_[0]) {
+sub discordian {    # Not to be confused with sub genius.
+    if ( ref $_[0] ) {
         my $self = shift;
         my $d = discohash( $self->year, $self->month, $self->day );
         return $d->{disco};
-    } else {
+      } else {
         return to_discordian( $_[0] );
     }
-} #}}}
+    # Fnord!
+}    #}}}
 
 # sub to_discordian {{{
 
@@ -71,19 +72,22 @@ sub to_discordian { # Be careful. It's hard to get back.
 }
 
 memoize('discohash');
-sub discohash { # Is that something you smoke at a disco?
+sub discohash {    # Is that something you smoke at a disco?
     my ( $year, $month, $d ) = @_;
+
     # my $datetime = shift;
     my ( $season, $day, $dow, $yold, $holyday, $datestring );
 
     my $yday = Date::ICal::days_this_year( $d, $month, $year ) + 1;
+
     # It *says* it's an internal method, but I'm not buying it.
 
-    if ( Date::Leapyear::isleap( $year ) ) {
+    if ( Date::Leapyear::isleap($year) ) {
         if ( $yday <= 59 ) {
 
             # nothing changes
-          } elsif ( $yday == 60 ) {
+          } elsif ( $yday == 60 )
+        {
 
             # leap day!
             $datestring = "St. Tibb's Day";
@@ -94,7 +98,7 @@ sub discohash { # Is that something you smoke at a disco?
         }
     }    # End leap year stuff
 
-    $season = int( ($yday-1) / 73 );
+    $season = int( ( $yday - 1 ) / 73 );
     $day    = ( $yday % 73 ) || 73;
     $dow    = $yday % 5;
     $yold   = $year + 1166;
@@ -117,31 +121,31 @@ sub discohash { # Is that something you smoke at a disco?
     $datestring .= " YOLD $yold";
 
     my $discohash = {
-        disco    => $datestring,
-        season   => $SEASONS[$season],
-        yold     => $yold,
-        holyday  => $holyday,
-        seasonday=> $day,
-        discoday => $DAYS[ $dow - 1 ],
+        disco     => $datestring,
+        season    => $SEASONS[$season],
+        yold      => $yold,
+        holyday   => $holyday,
+        seasonday => $day,
+        discoday  => $DAYS[ $dow - 1 ],
     };
 
     return $discohash;
-} #}}}
+}    #}}}
 
 # sub inverse_discordian {{{
 
-sub inverse_discordian { # Sounds like a wrestling hold.
+sub inverse_discordian {    # Sounds like a wrestling hold.
     if ( ref $_[0] ) {
         my $self = shift;
         return $self->epoch;
-    } else {
+      } else {
         return from_discordian( $_[0] );
     }
-} #}}}
+}    #}}}
 
 # sub from_discordian {{{
 
-sub from_discordian { # You only think it's possible.
+sub from_discordian {    # You only think it's possible.
     my $discordian = shift;
     my $epoch;
 
@@ -181,72 +185,72 @@ sub from_discordian { # You only think it's possible.
     }
 
     return $epoch;
-} #}}}
+}    #}}}
 
 # sub season {{{
 
-sub season { # For everything, there is a season.
+sub season {    # For everything, there is a season.
     my $d = shift;
     my $h;
 
-    if (ref $d) {
-        $h = discohash($d->year, $d->month, $d->day);
-        return $h->{season};
-    } else {
+    if ( ref $d ) {
+        $h = discohash( $d->year, $d->month, $d->day );
+      } else {
         $h = to_discordian($d);
-        return $h->{season};
     }
-} #}}}
+    return $h->{season};    # turn, turn, turn
+}    #}}}
 
 # sub discoday {{{
 
-sub discoday { # Stayin' alive
+sub discoday {    # Stayin' alive
     my $d = shift;
     my $h;
 
-    if (ref $d) {
-        $h = discohash($d->year, $d->month, $d->day);
+    if ( ref $d ) {
+        $h = discohash( $d->year, $d->month, $d->day );
         return $h->{discoday};
-    } else {
+      } else {
         $h = to_discordian($d);
         return $h->{discoday};
     }
-} # }}}
+}    # }}}
 
 # sub yold {{{
 
 sub yold {
-# Some folks say the epoch begins in 4000 BC. This is heresy. Spurn
-# these people. Or at least make strange chicken noises at them.
+
+    # Some folks say the epoch begins in 4000 BC. This is heresy. Spurn
+    # these people. Or at least make strange chicken noises at them.
 
     my $d = shift;
     my $h;
 
-    if (ref $d) {
-        $h = discohash($d->year, $d->month, $d->day);
+    if ( ref $d ) {
+        $h = discohash( $d->year, $d->month, $d->day );
         return $h->{yold};
-    } else {
+      } else {
         $h = to_discordian($d);
         return $h->{yold};
     }
-} #}}}
+}    #}}}
 
 # sub holyday {{{
 
-sub holyday { # Eat a hot dog
+sub holyday {    # Eat a hot dog
     my $d = shift;
     my $h;
 
-    if (ref $d) {
-        $h = discohash($d->year, $d->month, $d->day);
+    if ( ref $d ) {
+        $h = discohash( $d->year, $d->month, $d->day );
         return $h->{holyday};
-    } else {
+      } else {
         $h = to_discordian($d);
         return $h->{holyday};
     }
-} #}}}
+}    #}}}
 
-1;
+'Hail Eris!';
 
 # Docs {{{
 
@@ -352,57 +356,4 @@ Companion to the Year is a wonderful book too.
 =cut
 
 #}}}
-
-# CVS History {{{
-
-=begin CVS
-
-$Header: /home/cvs/date-discordian/lib/Date/Discordian.pm,v 1.35 2001/11/25 03:27:09 rbowen Exp $
-
-$Log: Discordian.pm,v $
-Revision 1.35  2001/11/25 03:27:09  rbowen
-Documentation update. More chicken references. More snide remarks.
-Updated Changes file and README to actually be somewhat in sync with
-reality.
-
-Revision 1.34  2001/11/24 19:04:26  rbowen
-Corrected order of arguments in days_this_year( ) call. Added
-documentation.
-
-Revision 1.33  2001/11/24 18:03:32  rbowen
-The syntax for days_this_year changed. That is probably a bad thing.
-
-Revision 1.32  2001/11/23 00:57:10  rbowen
-Permit years outside of the epoch.
-
-Revision 1.31  2001/11/22 22:29:49  rbowen
-Patches for end/beginning of season off-by-one bug. Tests to test for
-same.
-
-Revision 1.30  2001/10/15 02:47:37  rbowen
-Documentation update
-
-Revision 1.29  2001/10/15 02:43:57  rbowen
-Added various attribute accessors to get at yold, season, holyday, and
-day of the week.
-
-Revision 1.28  2001/09/13 01:35:02  rbowen
-Timezone problem. Use gmtime rather than localtime.
-Move tests to using is() rather than ok()
-
-Revision 1.27  2001/09/12 03:17:24  rbowen
-Added OO interface to Date::Discordian. Now a Date::ICal subclass. 25%
-more chewy.
-
-Revision 1.26  2001/07/24 15:50:17  rbowen
-Added a variety of tests.
-
-Revision 1.25  2000/09/24 11:18:05  rbowen
-Completed the inverse_discordian function
-
-=end CVS
-
-=cut
-
-# }}}
 
